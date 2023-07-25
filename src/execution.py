@@ -13,8 +13,6 @@ import autograder
 from utils.files import write
 
 
-def check_correctness(problem: Dict, timeout: float,
-
 def check_correctness(problem: Dict, completion: str, timeout: float,
                       completion_id: Optional[int] = None) -> Dict:
     """
@@ -45,19 +43,12 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
             write(problem["problem_id"] + ".py", problem["code"])
             write("autograder.py", get_autograder_code())
             exec_string = create_execution_string(problem["testcase"])
-            
-            check_program = (
-                problem["prompt"] + completion + "\n" +
-                problem["test"] + "\n" +
-                f"check({problem['entry_point']})"
-            )
 
             try:
                 exec_globals = {}
                 with swallow_io():
                     with time_limit(timeout):
                         exec(exec_string, exec_globals)
-                        exec(check_program, exec_globals)
                 result.append("passed")
             except TimeoutException:
                 result.append("timed out")
