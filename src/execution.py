@@ -31,23 +31,22 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
             import os
             import sys 
             import shutil
+
             rmtree = shutil.rmtree
             rmdir = os.rmdir
             chdir = os.chdir
+            unlink = os.unlink
 
             # Disable functionalities that can make destructive changes to the test.
-            # reliability_guard()
+            reliability_guard()
 
-            # Construct the check program and run it.
-
-            # adding the temp dir to the path
+            # adding the temp dir to the path such that autograder.py can be seen 
             sys.path.append("./")
 
-            print(problem["code"])
             write(problem["problem_id"] + ".py", problem["code"])
             write("autograder.py", get_autograder_code())
             exec_string = create_execution_string(problem["testcase"])
-
+            
             try:
                 exec_globals = {}
                 with swallow_io():
@@ -63,6 +62,7 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
             shutil.rmtree = rmtree
             os.rmdir = rmdir
             os.chdir = chdir
+            os.unlink = unlink
             # remove the temp dir from the path 
             sys.path.pop()
 
@@ -247,4 +247,3 @@ def get_autograder_code():
     with open(src.autograder.__file__, "r") as fp:
         file_content = fp.read()
     return file_content
-    sys.modules['tkinter'] = None
