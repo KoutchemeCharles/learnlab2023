@@ -8,6 +8,11 @@ from contextlib import (
 )
 
 def run_script(filepath, input_list):
+    """ 
+    Run a generic python program on the set of 
+    inputs given in input list. 
+    """
+
     with open(filepath, "r") as fp:
         student_solution = fp.read()
         
@@ -28,4 +33,8 @@ def run_script(filepath, input_list):
     return output, error 
 
 def compare_strings(outputs, expected_outputs):
+    """ 
+    Returns the number of matching elements at the same positions
+    among two lists
+    """
     return sum([o == eo for o, eo in zip(outputs, expected_outputs)])
