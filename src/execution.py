@@ -9,8 +9,8 @@ import platform
 import signal
 import tempfile
 
-import autograder
-from utils.files import write
+import src.autograder
+from src.utils.files import write
 
 
 def check_correctness(problem: Dict, completion: str, timeout: float,
@@ -29,17 +29,21 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
 
             # These system calls are needed when cleaning up tempdir.
             import os
+            import sys 
             import shutil
             rmtree = shutil.rmtree
             rmdir = os.rmdir
             chdir = os.chdir
 
             # Disable functionalities that can make destructive changes to the test.
-            reliability_guard()
+            # reliability_guard()
 
             # Construct the check program and run it.
 
-            
+            # adding the temp dir to the path
+            sys.path.append("./")
+
+            print(problem["code"])
             write(problem["problem_id"] + ".py", problem["code"])
             write("autograder.py", get_autograder_code())
             exec_string = create_execution_string(problem["testcase"])
@@ -59,6 +63,8 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
             shutil.rmtree = rmtree
             os.rmdir = rmdir
             os.chdir = chdir
+            # remove the temp dir from the path 
+            sys.path.pop()
 
     manager = multiprocessing.Manager()
     result = manager.list()
@@ -73,8 +79,6 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
         result.append("timed out")
 
     return dict(
-        #task_id=problem["task_id"],
-        task_id=problem["task_id"],
         passed=result[0] == "passed",
         result=result[0],
         completion_id=completion_id,
@@ -240,7 +244,7 @@ def create_execution_string(testcase):
 
 def get_autograder_code():
     """ Super dirty but temporary """
-    with open(autograder.__file__, "r") as fp:
+    with open(src.autograder.__file__, "r") as fp:
         file_content = fp.read()
     return file_content
     sys.modules['tkinter'] = None
