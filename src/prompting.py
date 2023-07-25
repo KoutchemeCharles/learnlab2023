@@ -17,7 +17,7 @@ def main():
 def parse_args():
     description = ""
     parser = ArgumentParser(description=description)
-    parser.add_argument("--")
+    parser.add_argument("--save_path")
 
 if __name__ == "__main__":
     main()
