@@ -1,0 +1,103 @@
+,problem_id,prompts,code
+0,a3_3_animals,"You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. Please provide a solution to this problem description:You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. Please provide a solution to this problem description: 
+Problem description:
+
+
+**PROBLEM STATEMENT:  
+** You have been provided with a list called `list_of_animals`. Write a
+program that prints out each of the items in this list (one item per line).
+
+
+
+**EXAMPLE:  
+** If, for example, the list contained the items: ""A"", ""B"", ""C""
+
+Your program should print:
+
+    
+    
+    A  
+    B  
+    C
+
+
+
+**NOTE:**
+
+  * You must use a loop to complete this task. 
+
+
+
+
+The answer should be code only, please do not provide explanations. Please put the answer within the fenced code block. ","list_of_animals = [""cat"", ""dog"", ""bird"", ""fish"", ""turtle""]
+
+for animal in list_of_animals:
+    print(animal)"
+1,a3_1_cargo,"You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. Please provide a solution to this problem description:You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. Please provide a solution to this problem description: 
+Problem description:
+
+
+**PROBLEM STATEMENT:  
+**
+
+You have been provided with a list called `list_of_cargo_planes`. Write a
+program that prints a single, specified plane from the list. Your program
+shall take a number via user input used to identify which plane to print. For
+example, if the user types a 3, you should print out the third item.
+
+
+
+**NOTE:**
+
+  * You may assume that the user will always enter a value that ""should"" exist within the list (e.g., the user will not enter 100 when the list only contains 5 elements)
+
+
+
+
+The answer should be code only, please do not provide explanations. Please put the answer within the fenced code block. ","**PROBLEM STATEMENT:  
+**
+
+You have been provided with a list called `list_of_cargo_planes`. Write a
+program that prints a single, specified plane from the list. Your program
+shall take a number via user input used to identify which plane to print. For
+example, if the user types a 3, you should print out the third item.
+
+
+
+**NOTE:**
+
+  * You may assume that the user will always enter a value that ""should"" exist within the list (e.g., the user will not enter 100 when the list only contains 5 elements)"
+2,a3_3_games,"You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. Please provide a solution to this problem description:You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. Please provide a solution to this problem description: 
+Problem description:
+
+
+**PROBLEM STATEMENT:  
+** You have been provided with a list called `list_of_games`. Write a program
+that prints out each of the items in this list (one item per line).
+
+
+
+**EXAMPLE:  
+** If, for example, the list contained the items: ""A"", ""B"", ""C""
+
+Your program should print:
+
+    
+    
+    A  
+    B  
+    C
+
+
+
+**NOTE:**
+
+  * You must use a loop to complete this task. 
+
+
+
+
+The answer should be code only, please do not provide explanations. Please put the answer within the fenced code block. ","list_of_games = [""Super Mario Bros."", ""Contra"", ""Metroid"", ""Mega Man 2""]
+
+for game in list_of_games:
+    print(game)"

@@ -14,6 +14,8 @@ from utils.files import write
 
 
 def check_correctness(problem: Dict, timeout: float,
+
+def check_correctness(problem: Dict, completion: str, timeout: float,
                       completion_id: Optional[int] = None) -> Dict:
     """
     Evaluates the functional correctness of a completion by running the test
@@ -44,11 +46,18 @@ def check_correctness(problem: Dict, timeout: float,
             write("autograder.py", get_autograder_code())
             exec_string = create_execution_string(problem["testcase"])
             
+            check_program = (
+                problem["prompt"] + completion + "\n" +
+                problem["test"] + "\n" +
+                f"check({problem['entry_point']})"
+            )
+
             try:
                 exec_globals = {}
                 with swallow_io():
                     with time_limit(timeout):
                         exec(exec_string, exec_globals)
+                        exec(check_program, exec_globals)
                 result.append("passed")
             except TimeoutException:
                 result.append("timed out")
@@ -74,6 +83,7 @@ def check_correctness(problem: Dict, timeout: float,
 
     return dict(
         #task_id=problem["task_id"],
+        task_id=problem["task_id"],
         passed=result[0] == "passed",
         result=result[0],
         completion_id=completion_id,
@@ -242,3 +252,4 @@ def get_autograder_code():
     with open(autograder.__file__, "r") as fp:
         file_content = fp.read()
     return file_content
+    sys.modules['tkinter'] = None

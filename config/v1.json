@@ -1,0 +1,5 @@
+{
+    "task": "synthesis", 
+    "prompt": "You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. Please provide a solution to this problem description",
+    "dataset": "falconcode_v1_table_problems.csv"
+}

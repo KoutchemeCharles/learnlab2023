@@ -17,7 +17,11 @@ def main():
 def parse_args():
     description = ""
     parser = ArgumentParser(description=description)
+<<<<<<< Updated upstream
     parser.add_argument("--save_path")
+=======
+    parser.add_argument("--")
+>>>>>>> Stashed changes
 
 if __name__ == "__main__":
     main()
