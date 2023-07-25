@@ -9,8 +9,11 @@ import platform
 import signal
 import tempfile
 
+import autograder
+from utils.files import write
 
-def check_correctness(problem: Dict, completion: str, timeout: float,
+
+def check_correctness(problem: Dict, timeout: float,
                       completion_id: Optional[int] = None) -> Dict:
     """
     Evaluates the functional correctness of a completion by running the test
@@ -35,17 +38,17 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
             reliability_guard()
 
             # Construct the check program and run it.
-            check_program = (
-                problem["prompt"] + completion + "\n" +
-                problem["test"] + "\n" +
-                f"check({problem['entry_point']})"
-            )
 
+            
+            write(problem["problem_id"] + ".py", problem["code"])
+            write("autograder.py", get_autograder_code())
+            exec_string = create_execution_string(problem["testcase"])
+            
             try:
                 exec_globals = {}
                 with swallow_io():
                     with time_limit(timeout):
-                        exec(check_program, exec_globals)
+                        exec(exec_string, exec_globals)
                 result.append("passed")
             except TimeoutException:
                 result.append("timed out")
@@ -70,7 +73,7 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
         result.append("timed out")
 
     return dict(
-        task_id=problem["task_id"],
+        #task_id=problem["task_id"],
         passed=result[0] == "passed",
         result=result[0],
         completion_id=completion_id,
@@ -218,3 +221,24 @@ def reliability_guard(maximum_memory_bytes: Optional[int] = None):
     sys.modules['resource'] = None
     sys.modules['psutil'] = None
     sys.modules['tkinter'] = None
+
+
+
+def create_execution_string(testcase):
+    unit_test_string = testcase
+    # Allow code execution not in the main clause
+    unit_test_string = unit_test_string.replace("if __name__ == '__main__':", "")
+    unit_test_string = unit_test_string.replace("result = test_passed()", "")
+    unit_test_string = unit_test_string.replace('print("Unit Test Returned:", result)', "")
+    unit_test_string = unit_test_string.strip()
+    unit_test_string = unit_test_string + "\nresult = test_passed()\n"
+    unit_test_string = unit_test_string + 'print("Unit Test Returned:", result)'
+    unit_test_string = unit_test_string.replace("from cs110 import autograder", "import autograder")
+    
+    return unit_test_string
+
+def get_autograder_code():
+    """ Super dirty but temporary """
+    with open(autograder.__file__, "r") as fp:
+        file_content = fp.read()
+    return file_content
