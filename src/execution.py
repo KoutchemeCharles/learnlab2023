@@ -65,16 +65,14 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
                             exec(exec_string, exec_globals)
                 unit_test_result = stream.getvalue()
                 score = get_unit_test_score(unit_test_result)
-                print(score)
-                print(unit_test_result)
-                result.append("passed")
-                # I want to have the 
+                result.append({"exec_result": "completed", "score": score, "text": unit_test_result})
+                
             except TimeoutException:
-                result.append("timed out")
+                result.append({"exec_result": "timed out", "score": 0, "text": unit_test_result})
             except BaseException as e:
-                print(e)
-                result.append(f"failed: {e}")
-
+                result.append({"exec_result": f"failed: {e}", "score": 0, "text": ""})
+                print(result[-1])
+            
             # Needed for cleaning up.
             shutil.rmtree = rmtree
             os.rmdir = rmdir
@@ -93,13 +91,9 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
         p.kill()
 
     if not result:
-        result.append("timed out")
+        result.append({"exec_result": "timed out", "score": 0, "text": ""})
 
-    return dict(
-        passed=result[0] == "passed",
-        result=result[0],
-        completion_id=completion_id,
-    )
+    return result[0]
 
 
 @contextlib.contextmanager

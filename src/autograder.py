@@ -7,7 +7,9 @@ from contextlib import (
     redirect_stdout, redirect_stderr
 )
 
-def run_script(filepath, input_list):
+from src.utils.code import does_compile
+
+def run_script(filepath, input_list, b=False):
     """ 
     Run a generic python program on the set of 
     inputs given in input list. 
@@ -38,3 +40,19 @@ def compare_strings(outputs, expected_outputs):
     among two lists
     """
     return sum([o == eo for o, eo in zip(outputs, expected_outputs)])
+
+
+def equals(a, b):
+    return a == b
+
+
+def code_compiles(filepath):
+    """ 
+    Run a generic python program on the set of 
+    inputs given in input list. 
+    """
+
+    with open(filepath, "r") as fp:
+        student_solution = fp.read()
+        
+    return does_compile(student_solution)
