@@ -86,6 +86,7 @@ def main():
     parser.add_argument('-i', '--input-dir', required=True, help='the directory to save result.csv file')
     parser.add_argument('-o', '--output-dir', required=True, help='the directory to save result.csv file')
     parser.add_argument('-c', '--config', required=True, help='the configuration', default='config/v1.json')
+    parser.add_argument('-v', '--validity', required=True, help='the valid ones', default='config/validity.json')
     args = parser.parse_args()
 
     print(f'ensure that {args.output_dir} directory exists...')
@@ -98,7 +99,7 @@ def main():
     problems_df.fillna("")
     
     config = json2data(args.config)
-    problems_to_drop = config['rejected']
+    problems_to_drop = json2data(args.validity)
     
     problems_df = problems_df[~problems_df['id'].isin(problems_to_drop)]
     print(len(problems_df))
