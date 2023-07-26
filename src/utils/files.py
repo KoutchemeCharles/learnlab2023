@@ -1,7 +1,6 @@
 import os, json
 from pathlib import Path
 from shutil import rmtree
-from dotmap import DotMap
 
 def json2data(filename):
     """ loads a json file into a list (od dictionaries) """
@@ -25,10 +24,6 @@ def save_json(data, filename):
     with open(filename, 'w') as fp:
         json.dump(data, fp)
 
-def read_config(filename):
-    """ Read a dictionary in a configuration format and transforms it into DotMap."""
-    return DotMap(json2data(filename))
-
-def write(string, file):
+def write(file, string):
     with open(file, "w") as fp:
         fp.write(string)
