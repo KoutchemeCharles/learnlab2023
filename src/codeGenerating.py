@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import html2text
 import openai
+from utils.files import json2data
 
 
 def getConcepts(problem_id, df):
@@ -96,7 +97,9 @@ def main():
     problems_df = problems_df.drop_duplicates(subset='id', keep='first')
     problems_df.fillna("")
     
-    problems_to_drop = ["pex3", "caesar", "caesar_gc", "Airstrike","Recon","Skywriter","CS110_Ingenuity_Simulator_Spiral_1","CS110_Ingenuity_Simulator_Spiral_2", "CS110_Ingenuity_Simulator_Spiral_3","pex1"]
+    config = json2data(args.config)
+    problems_to_drop = config['rejected']
+    
     problems_df = problems_df[~problems_df['id'].isin(problems_to_drop)]
     print(len(problems_df))
     
