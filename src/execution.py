@@ -1,3 +1,8 @@
+""" Executing programs on the falconcode dataset.
+This code was adapted from
+https://github.com/openai/human-eval/blob/master/human_eval/execution.py
+"""
+
 from typing import Optional, Callable, Dict
 import ast
 import contextlib
@@ -49,13 +54,25 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
             
             try:
                 exec_globals = {}
-                with swallow_io():
+                """with swallow_io():
                     with time_limit(timeout):
-                        exec(exec_string, exec_globals)
+                        exec(exec_string, exec_globals)"""
+
+                stream = io.StringIO()
+                with contextlib.redirect_stdout(stream):
+                    with contextlib.redirect_stderr(stream):
+                        with redirect_stdin(stream):
+                            exec(exec_string, exec_globals)
+                unit_test_result = stream.getvalue()
+                score = get_unit_test_score(unit_test_result)
+                print(score)
+                print(unit_test_result)
                 result.append("passed")
+                # I want to have the 
             except TimeoutException:
                 result.append("timed out")
             except BaseException as e:
+                print(e)
                 result.append(f"failed: {e}")
 
             # Needed for cleaning up.
@@ -247,3 +264,10 @@ def get_autograder_code():
     with open(src.autograder.__file__, "r") as fp:
         file_content = fp.read()
     return file_content
+
+def get_unit_test_score(testcase_output):
+    lines = testcase_output.splitlines()
+    utr = [l for l in lines if l.startswith("Unit Test Returned:")]
+    if utr:
+        return float(utr[0].replace("Unit Test Returned:", "").strip())
+    return 0.0
