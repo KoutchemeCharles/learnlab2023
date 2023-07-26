@@ -22,12 +22,10 @@ def getConcepts(problem_id, df):
 
 def generatePropmt(problem_description, skeleton_code, student_code, concepts):
     
-    prompt = "You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. " 
-    
-    prompt += f"{prompt} \nProblem description:\n{problem_description}\n"
-    
+    prompt = "You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming." 
+    prompt += f"\n{problem_description}\n"
     if skeleton_code:
-        prompt += f"{prompt} \nPlease build your solution based on the following skeleton code: :\n{skeleton_code}\n"
+        prompt += f"\nPlease build your solution based on the following skeleton code: :\n{skeleton_code}\n"
         
     if concepts:
         prompt +=  f"Assume your python knowledge is within {str(concepts)}\n"
@@ -45,13 +43,13 @@ def extractResultCode(raw_result):
         raw_result = raw_result.split("```")[0]
     return raw_result
 
-def generateGPTAnswer(prompt, api_key=os.getenv("OPENAI_API_KEY"), model="gpt-3.5-turbo"):
+def generateGPTAnswer(prompt, api_key=os.environ.get('OPEN_AI_KEY', None), model="gpt-3.5-turbo"):
     """
     input: prompt, problem_description, student_code
     output: gpt-genrated code
     """
-    # openai.api_key = api_key
-    openai.api_key = ""
+    openai.api_key = api_key
+    
     gpt_code  = ""
     
     if model in ["code-davinci-edit-001"]: # endpoint is v1/completions
@@ -80,19 +78,25 @@ def generateGPTAnswer(prompt, api_key=os.getenv("OPENAI_API_KEY"), model="gpt-3.
     return gpt_code
 
 
-def main():
+def parse_args():
     parser = argparse.ArgumentParser(description='Call chatGPT-3.5 api to generate code and save into a csv file.')
     parser.add_argument('-m', '--model', help='the model used to generate the code', default='gpt-3.5-turbo')
     parser.add_argument('-i', '--input-dir', required=True, help='the directory to save result.csv file')
-    parser.add_argument('-o', '--output-dir', required=True, help='the directory to save result.csv file')
-    parser.add_argument('-c', '--config', required=True, help='the configuration', default='config/v1.json')
-    parser.add_argument('-v', '--validity', required=True, help='the valid ones', default='config/validity.json')
-    args = parser.parse_args()
+    parser.add_argument('-o', '--output-dir',  required=True, help='the directory to save result.csv file')
+    parser.add_argument('-c', '--config', help='the configuration', default='config/v1.json')
+    parser.add_argument('-v', '--validity', help='the valid ones', default='config/validity.json')
+    
 
+    return parser.parse_args()
+
+def main():
+    args = parse_args()
     print(f'ensure that {args.output_dir} directory exists...')
     os.makedirs(args.output_dir, exist_ok=True)
     print(f'successfully ensured directory existence')
     
+    assert os.environ.get('OPEN_AI_KEY', None)
+
     problems_filename = os.path.join(args.input_dir, 'falconcode_v1_table_problems_updated.csv')
     problems_df = pd.read_csv(problems_filename)
     problems_df = problems_df.drop_duplicates(subset='id', keep='first')
@@ -103,6 +107,8 @@ def main():
     
     problems_df = problems_df[~problems_df['id'].isin(problems_to_drop)]
     print(len(problems_df))
+
+    print("looping over the problems")
     
     """
     looping over all problems
@@ -122,13 +128,12 @@ def main():
         except openai.error.ServiceUnavailableError:
             break
         
-        
         problem_ids.append(row['id'])
         prompts.append(prompt)
         codes.append(code)
         
     result_df = pd.DataFrame({"problem_id":problem_ids, "prompts": prompts, "code": codes})
-    result_filename = os.path.join(args.output_dir, args.model+'_'+args.config.split("config/")[1].split(".json")[0]+'_result.csv')
+    result_filename = os.path.join(args.output_dir, args.model+'_'+args.config.split("config/")[1].split(".json")[0]+'_result_test.csv')
     result_df.to_csv(result_filename)
     
 
