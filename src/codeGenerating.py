@@ -19,15 +19,18 @@ def getConcepts(problem_id, df):
     return [concept for concept in concept_list if (df[df['id']==problem_id][concept].iloc[0]==1)]
 
 
-def generatePropmt(problem_description, student_code, concepts):
-    prompt = "You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. Please provide a solution to this problem description:" 
-    if student_code == "":
-        prompt += f"{prompt} \nProblem description:\n{problem_description}\n"
+def generatePropmt(problem_description, skeleton_code, student_code, concepts):
+    
+    prompt = "You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. " 
+    
+    prompt += f"{prompt} \nProblem description:\n{problem_description}\n"
+    
+    if skeleton_code:
+        prompt += f"{prompt} \nPlease build your solution based on the following skeleton code: :\n{skeleton_code}\n"
+        
     if concepts:
         prompt +=  f"Assume your python knowledge is within {str(concepts)}\n"
-    prompt += "The answer should be code only, please do not provide explanations. Please put the answer within the fenced code block. "
-#     else: 
-#         prompt = f"{prompt} \nProblem description:\n{problem_description}\n Assume your python knowledge is within {str(concepts)}"
+    prompt += "The answer should be code only, please do not provide explanations. Please put the answer within the fenced code block. The skeleton code should be included in your answer."
 
     return prompt
 
@@ -47,7 +50,7 @@ def generateGPTAnswer(prompt, api_key=os.getenv("OPENAI_API_KEY"), model="gpt-3.
     output: gpt-genrated code
     """
     # openai.api_key = api_key
-    openai.api_key = "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"
+    openai.api_key = ""
     gpt_code  = ""
     
     if model in ["code-davinci-edit-001"]: # endpoint is v1/completions
@@ -62,7 +65,7 @@ def generateGPTAnswer(prompt, api_key=os.getenv("OPENAI_API_KEY"), model="gpt-3.
         print(gpt_code)
 
     
-    if model in ["gpt-3.5-turbo"]: # endpoint is v1/chat/completions
+    else: # endpoint is v1/chat/completions
         response = openai.ChatCompletion.create(
         model=model,
         messages=[
@@ -88,8 +91,14 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
     print(f'successfully ensured directory existence')
     
-    problems_filename = os.path.join(args.input_dir, 'falconcode_v1_table_problems.csv')
+    problems_filename = os.path.join(args.input_dir, 'falconcode_v1_table_problems_updated.csv')
     problems_df = pd.read_csv(problems_filename)
+    problems_df = problems_df.drop_duplicates(subset='id', keep='first')
+    problems_df.fillna("")
+    
+    problems_to_drop = ["pex3", "caesar", "caesar_gc", "Airstrike","Recon","Skywriter","CS110_Ingenuity_Simulator_Spiral_1","CS110_Ingenuity_Simulator_Spiral_2", "CS110_Ingenuity_Simulator_Spiral_3","pex1"]
+    problems_df = problems_df[~problems_df['id'].isin(problems_to_drop)]
+    print(len(problems_df))
     
     """
     looping over all problems
@@ -102,7 +111,8 @@ def main():
         print(i)
         row = problems_df.iloc[i]
         problem_description = html2text.html2text(row['prompt'])
-        prompt = generatePropmt(problem_description, "", concepts=[])
+        skeleton_code = row['skeleton']
+        prompt = generatePropmt(problem_description, skeleton_code, "", [])
         try: 
             code = extractResultCode(generateGPTAnswer(prompt, model=args.model))
         except openai.error.ServiceUnavailableError:
