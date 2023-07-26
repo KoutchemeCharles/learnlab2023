@@ -66,12 +66,13 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
                 unit_test_result = stream.getvalue()
                 score = get_unit_test_score(unit_test_result)
                 result.append({"exec_result": "completed", "score": score, "text": unit_test_result})
-                
+                assert isinstance(score, float)
+
             except TimeoutException:
                 result.append({"exec_result": "timed out", "score": 0, "text": unit_test_result})
             except BaseException as e:
                 result.append({"exec_result": f"failed: {e}", "score": 0, "text": ""})
-                print(result[-1])
+                # print(result[-1])
             
             # Needed for cleaning up.
             shutil.rmtree = rmtree

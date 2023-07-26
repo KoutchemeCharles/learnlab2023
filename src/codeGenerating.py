@@ -133,7 +133,7 @@ def main():
         codes.append(code)
         
     result_df = pd.DataFrame({"problem_id":problem_ids, "prompts": prompts, "code": codes})
-    result_filename = os.path.join(args.output_dir, args.model+'_'+args.config.split("config/")[1].split(".json")[0]+'_result_test.csv')
+    result_filename = os.path.join(args.output_dir, args.model+'_'+args.config.split("config/")[1].split(".json")[0]+'_result.csv')
     result_df.to_csv(result_filename)
     
 
