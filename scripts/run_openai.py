@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 
-import os, argparse
+import os
 import time
-import pandas as pd
+import argparse
 import html2text
+
 import openai
+import pandas as pd
+
 from src.execution import check_correctness
-from utils.files import json2data
+from src.utils.files import json2data
 from tqdm import tqdm 
 
 
