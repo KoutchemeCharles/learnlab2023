@@ -54,10 +54,6 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
             
             try:
                 exec_globals = {}
-                """with swallow_io():
-                    with time_limit(timeout):
-                        exec(exec_string, exec_globals)"""
-
                 stream = io.StringIO()
                 with contextlib.redirect_stdout(stream):
                     with contextlib.redirect_stderr(stream):

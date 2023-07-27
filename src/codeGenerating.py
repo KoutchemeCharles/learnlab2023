@@ -6,6 +6,7 @@ import numpy as np
 import html2text
 import openai
 from utils.files import json2data
+from tqdm import tqdm 
 
 
 def getConcepts(problem_id, df):
@@ -20,17 +21,14 @@ def getConcepts(problem_id, df):
     return [concept for concept in concept_list if (df[df['id']==problem_id][concept].iloc[0]==1)]
 
 
-def generatePropmt(problem_description, skeleton_code, student_code, concepts):
+def generatePropmt(problem_description, skeleton_code):
     
     # prompt = "You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming."
-    prompt = "You are given the following problem statement:"
-    prompt += f"\n{problem_description}\n"
-    if skeleton_code:
-        prompt += f"\nWrite a solution (in Python) that solves the problem statement using the following skeleton code: \n{skeleton_code}\n"
-        
-    if concepts:
-        prompt +=  f"Assume your python knowledge is within {str(concepts)}\n"
-    prompt += "Put your code solution within the fenced code block, and do not provide explanations for your solution."
+    prompt = "Bellow is a problem statement,"
+    prompt += f" write a program in Python that solves the problem."
+    prompt += "Put your code solution within fenced code blocks,"
+    prompt += " and do not provide explanations for your solution. \n"
+    prompt += f"{problem_description}\n{skeleton_code}"
 
     return prompt
 
@@ -95,19 +93,18 @@ def main():
     print(f'ensure that {args.output_dir} directory exists...')
     os.makedirs(args.output_dir, exist_ok=True)
     print(f'successfully ensured directory existence')
-    
-    assert os.environ.get('OPEN_AI_KEY', None)
 
     problems_filename = os.path.join(args.input_dir, 'falconcode_v1_table_problems_updated.csv')
     problems_df = pd.read_csv(problems_filename)
     problems_df = problems_df.drop_duplicates(subset='id', keep='first')
     problems_df = problems_df.fillna("")
     
-    config = json2data(args.config)
+    # config = json2data(args.config)
     problems_to_drop = json2data(args.validity)
     
     problems_df = problems_df[~problems_df['id'].isin(problems_to_drop)]
     print(len(problems_df))
+    assert problems_df['id'].isin(problems_to_drop).sum() == 0
 
     print("looping over the problems")
     
@@ -117,13 +114,11 @@ def main():
     problem_ids = []
     prompts = []
     codes = []
-    for i in range(len(problems_df)):
-    # for i in range(3):
-        print(i)
+    for i in tqdm(range(len(problems_df))):
         row = problems_df.iloc[i]
         problem_description = html2text.html2text(row['prompt'])
         skeleton_code = row['skeleton']
-        prompt = generatePropmt(problem_description, skeleton_code, "", [])
+        prompt = generatePropmt(problem_description, skeleton_code)
         try: 
             code = extractResultCode(generateGPTAnswer(prompt, model=args.model))
         except openai.error.ServiceUnavailableError:
@@ -136,8 +131,9 @@ def main():
     result_df = pd.DataFrame({"problem_id":problem_ids, "prompts": prompts, "code": codes})
     result_filename = os.path.join(args.output_dir, args.model+'_'+args.config.split("config/")[1].split(".json")[0]+'_result.csv')
     result_df.to_csv(result_filename)
-    
 
+    print('Wrote results into', result_df)
+    
 
 if __name__ == '__main__':
     main()
