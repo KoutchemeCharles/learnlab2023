@@ -48,7 +48,7 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
             # adding the temp dir to the path such that autograder.py can be seen 
             sys.path.append("./")
 
-            write(problem["problem_id"] + ".py", problem["code"])
+            write(problem["id"] + ".py", problem["code"])
             write("autograder.py", get_autograder_code())
             exec_string = create_execution_string(problem["testcase"])
             

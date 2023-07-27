@@ -3,11 +3,23 @@
 import os, argparse
 import time
 import pandas as pd
-import numpy as np
 import html2text
 import openai
+from src.execution import check_correctness
 from utils.files import json2data
 from tqdm import tqdm 
+
+
+def save_generation_results(dataframe, args):
+    print(f'ensure that {args.output_dir} directory exists...')
+    os.makedirs(args.output_dir, exist_ok=True)
+    print(f'successfully ensured directory existence')
+
+    config_version = args.config.split("config/")[1].split(".json")[0]
+    filename = f"{args.model}_{config_version}_result_new.csv"
+    result_filename = os.path.join(args.output_dir, filename)
+    print("Saving results to ", result_filename)
+    dataframe.to_csv(result_filename)
 
 
 def getConcepts(problem_id, df):
@@ -64,7 +76,7 @@ def generateGPTAnswer(prompt, api_key=os.environ.get('OPEN_AI_KEY', None), model
         print(gpt_code)
 
     
-    else: # endpoint is v1/chat/completions
+    else: # endpointpython src/codeGenerating.py -i /scratch/work/koutchc1/datasets/falconcode -o /home/koutchc1/learnlab2023/outputs/ -m gpt-4 is v1/chat/completions
         response = openai.ChatCompletion.create(
         model=model,
         messages=[
@@ -79,43 +91,27 @@ def generateGPTAnswer(prompt, api_key=os.environ.get('OPEN_AI_KEY', None), model
 
 
 def get_results(problems_df, model):
-    problem_ids = []
-    prompts = []
-    codes = []
 
+    results = []
     for i in tqdm(range(len(problems_df))):
-        row = problems_df.iloc[i]
+        row = problems_df.iloc[i].to_dict()
         problem_description = html2text.html2text(row['prompt'])
-        skeleton_code = row['skeleton']
-        prompt = generatePropmt(problem_description, skeleton_code)
+        row["prompt"] = generatePropmt(problem_description, row['skeleton'])
         try: 
-            code = extractResultCode(generateGPTAnswer(prompt, model=model))
+            gpt_answser = generateGPTAnswer(row["prompt"], model=model)
+            row["code"] = extractResultCode(gpt_answser)
+            row.update(check_correctness(row, timeout=5.0, completion=None))
+
         except openai.error.ServiceUnavailableError:
             print("Service unavailable, trying again")
             continue
 
-        problem_ids.append(row['id'])
-        prompts.append(prompt)
-        codes.append(code)
+        results.append(row)
         
-    result_df = pd.DataFrame({
-        "problem_id":problem_ids, 
-        "prompts": prompts, 
-        "code": codes
-    })
+    result_df = pd.DataFrame(results)
 
     return result_df
 
-
-def save_results(dataframe, args):
-    print(f'ensure that {args.output_dir} directory exists...')
-    os.makedirs(args.output_dir, exist_ok=True)
-    print(f'successfully ensured directory existence')
-
-    config_version = args.config.split("config/")[1].split(".json")[0]
-    filename = f"{args.model}_{config_version}_result.csv"
-    result_filename = os.path.join(args.output_dir, filename)
-    dataframe.to_csv(result_filename)
 
 
 def query_openai(problems_df, args):
@@ -125,13 +121,11 @@ def query_openai(problems_df, args):
         result_df = get_results(problems_df, args.model)
         remaining -= len(result_df)
         dataframe.append(result_df)
-        problems_df = problems_df[~problems_df['id'].isin(result_df["problem_id"])]
+        problems_df = problems_df[~problems_df['id'].isin(result_df["id"])]
         print("Remaining", remaining, "n_trials", n_trials)
         print("sleeping before trying again")
         time.sleep(60)
 
-    print("Number of dataframes in pack", len(dataframe))
-    print(dataframe)
     dataframe = pd.concat(dataframe, axis=0, ignore_index=True)
     return dataframe
 
@@ -163,7 +157,7 @@ def main():
     args = parse_args()
     problems_df = load_dataset(args)
     dataframe = query_openai(problems_df, args)
-    save_results(dataframe, args)
+    save_generation_results(dataframe, args)
     
 
 if __name__ == '__main__':
