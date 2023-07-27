@@ -1,11 +1,25 @@
 #!/usr/bin/env python
 
 import os, argparse
+import time
 import pandas as pd
-import numpy as np
 import html2text
 import openai
+from src.execution import check_correctness
 from utils.files import json2data
+from tqdm import tqdm 
+
+
+def save_generation_results(dataframe, args):
+    print(f'ensure that {args.output_dir} directory exists...')
+    os.makedirs(args.output_dir, exist_ok=True)
+    print(f'successfully ensured directory existence')
+
+    config_version = args.config.split("config/")[1].split(".json")[0]
+    filename = f"{args.model}_{config_version}_result_new.csv"
+    result_filename = os.path.join(args.output_dir, filename)
+    print("Saving results to ", result_filename)
+    dataframe.to_csv(result_filename)
 
 
 def getConcepts(problem_id, df):
@@ -20,18 +34,14 @@ def getConcepts(problem_id, df):
     return [concept for concept in concept_list if (df[df['id']==problem_id][concept].iloc[0]==1)]
 
 
-def generatePropmt(problem_description, skeleton_code, student_code, concepts):
+def generatePropmt(problem_description, skeleton_code):
     
-    prompt = "You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. " 
-    
-    prompt += f"{prompt} \nProblem description:\n{problem_description}\n"
-    
-    if skeleton_code:
-        prompt += f"{prompt} \nPlease build your solution based on the following skeleton code: :\n{skeleton_code}\n"
-        
-    if concepts:
-        prompt +=  f"Assume your python knowledge is within {str(concepts)}\n"
-    prompt += "The answer should be code only, please do not provide explanations. Please put the answer within the fenced code block. The skeleton code should be included in your answer."
+    # prompt = "You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming."
+    prompt = "Bellow is a problem statement,"
+    prompt += f" write a program in Python that solves the problem."
+    prompt += "Put your code solution within fenced code blocks,"
+    prompt += " and do not provide explanations for your solution. \n"
+    prompt += f"{problem_description}\n{skeleton_code}"
 
     return prompt
 
@@ -45,13 +55,13 @@ def extractResultCode(raw_result):
         raw_result = raw_result.split("```")[0]
     return raw_result
 
-def generateGPTAnswer(prompt, api_key=os.getenv("OPENAI_API_KEY"), model="gpt-3.5-turbo"):
+def generateGPTAnswer(prompt, api_key=os.environ.get('OPEN_AI_KEY', None), model="gpt-3.5-turbo"):
     """
     input: prompt, problem_description, student_code
     output: gpt-genrated code
     """
-    # openai.api_key = api_key
-    openai.api_key = ""
+    openai.api_key = api_key
+    
     gpt_code  = ""
     
     if model in ["code-davinci-edit-001"]: # endpoint is v1/completions
@@ -66,7 +76,7 @@ def generateGPTAnswer(prompt, api_key=os.getenv("OPENAI_API_KEY"), model="gpt-3.
         print(gpt_code)
 
     
-    else: # endpoint is v1/chat/completions
+    else: # endpointpython src/codeGenerating.py -i /scratch/work/koutchc1/datasets/falconcode -o /home/koutchc1/learnlab2023/outputs/ -m gpt-4 is v1/chat/completions
         response = openai.ChatCompletion.create(
         model=model,
         messages=[
@@ -80,57 +90,76 @@ def generateGPTAnswer(prompt, api_key=os.getenv("OPENAI_API_KEY"), model="gpt-3.
     return gpt_code
 
 
-def main():
+def get_results(problems_df, model):
+
+    results = []
+    for i in tqdm(range(len(problems_df))):
+        row = problems_df.iloc[i].to_dict()
+        problem_description = html2text.html2text(row['prompt'])
+        row["prompt"] = generatePropmt(problem_description, row['skeleton'])
+        row["model"] = model
+        try: 
+            gpt_answser = generateGPTAnswer(row["prompt"], model=model)
+            row["code"] = extractResultCode(gpt_answser)
+            row.update(check_correctness(row, timeout=5.0, completion=None))
+
+        except openai.error.ServiceUnavailableError:
+            print("Service unavailable, trying again")
+            continue
+
+        results.append(row)
+        
+    result_df = pd.DataFrame(results)
+
+    return result_df
+
+
+
+def query_openai(problems_df, args):
+    dataframe = []
+    remaining, n_trials = len(problems_df),  3
+    while remaining > 0 and n_trials > 0:
+        result_df = get_results(problems_df, args.model)
+        remaining -= len(result_df)
+        dataframe.append(result_df)
+        problems_df = problems_df[~problems_df['id'].isin(result_df["id"])]
+        print("Remaining", remaining, "n_trials", n_trials)
+        print("sleeping before trying again")
+        time.sleep(60)
+
+    dataframe = pd.concat(dataframe, axis=0, ignore_index=True)
+    return dataframe
+
+
+def load_dataset(args):
+    problems_filename = os.path.join(args.input_dir, 'falconcode_v1_table_problems_updated.csv')
+    problems_df = pd.read_csv(problems_filename)
+    problems_df = problems_df.fillna("")
+    print("Original number of problems", len(problems_df))
+    problems_df = problems_df.drop_duplicates(subset='id', keep='first')
+    print("After dropping duplicates", len(problems_df))
+    problems_to_drop = json2data(args.validity)
+    problems_df = problems_df[~problems_df['id'].isin(problems_to_drop)]
+    print("after removing bad problems", len(problems_df))
+
+    return problems_df
+
+def parse_args():
     parser = argparse.ArgumentParser(description='Call chatGPT-3.5 api to generate code and save into a csv file.')
     parser.add_argument('-m', '--model', help='the model used to generate the code', default='gpt-3.5-turbo')
     parser.add_argument('-i', '--input-dir', required=True, help='the directory to save result.csv file')
-    parser.add_argument('-o', '--output-dir', required=True, help='the directory to save result.csv file')
-    parser.add_argument('-c', '--config', required=True, help='the configuration', default='config/v1.json')
-    args = parser.parse_args()
+    parser.add_argument('-o', '--output-dir',  required=True, help='the directory to save result.csv file')
+    parser.add_argument('-c', '--config', help='the configuration', default='config/v1.json')
+    parser.add_argument('-v', '--validity', help='the valid ones', default='config/validity.json')
+    
+    return parser.parse_args()
 
-    print(f'ensure that {args.output_dir} directory exists...')
-    os.makedirs(args.output_dir, exist_ok=True)
-    print(f'successfully ensured directory existence')
+def main():
+    args = parse_args()
+    problems_df = load_dataset(args)
+    dataframe = query_openai(problems_df, args)
+    save_generation_results(dataframe, args)
     
-    problems_filename = os.path.join(args.input_dir, 'falconcode_v1_table_problems_updated.csv')
-    problems_df = pd.read_csv(problems_filename)
-    problems_df = problems_df.drop_duplicates(subset='id', keep='first')
-    problems_df.fillna("")
-    
-    config = json2data(args.config)
-    problems_to_drop = config['rejected']
-    
-    problems_df = problems_df[~problems_df['id'].isin(problems_to_drop)]
-    print(len(problems_df))
-    
-    """
-    looping over all problems
-    """
-    problem_ids = []
-    prompts = []
-    codes = []
-    for i in range(len(problems_df)):
-    # for i in range(3):
-        print(i)
-        row = problems_df.iloc[i]
-        problem_description = html2text.html2text(row['prompt'])
-        skeleton_code = row['skeleton']
-        prompt = generatePropmt(problem_description, skeleton_code, "", [])
-        try: 
-            code = extractResultCode(generateGPTAnswer(prompt, model=args.model))
-        except openai.error.ServiceUnavailableError:
-            break
-        
-        
-        problem_ids.append(row['id'])
-        prompts.append(prompt)
-        codes.append(code)
-        
-    result_df = pd.DataFrame({"problem_id":problem_ids, "prompts": prompts, "code": codes})
-    result_filename = os.path.join(args.output_dir, args.model+'_'+args.config.split("config/")[1].split(".json")[0]+'_result.csv')
-    result_df.to_csv(result_filename)
-    
-
 
 if __name__ == '__main__':
     main()

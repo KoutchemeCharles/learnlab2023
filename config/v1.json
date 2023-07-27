@@ -1,6 +1,6 @@
 {
     "task": "synthesis", 
-    "prompt": "You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. Please provide a solution to this problem description",
+    "prompt": "You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. Please provide a solution to the following problem statement.",
     "dataset": "falconcode_v1_table_problems.csv",
     "rejected": ["pex3", "caesar", "caesar_gc", "Airstrike","Recon","Skywriter","CS110_Ingenuity_Simulator_Spiral_1","CS110_Ingenuity_Simulator_Spiral_2", "CS110_Ingenuity_Simulator_Spiral_3","pex1"]
 }

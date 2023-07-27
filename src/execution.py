@@ -1,3 +1,8 @@
+""" Executing programs on the falconcode dataset.
+This code was adapted from
+https://github.com/openai/human-eval/blob/master/human_eval/execution.py
+"""
+
 from typing import Optional, Callable, Dict
 import ast
 import contextlib
@@ -43,21 +48,28 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
             # adding the temp dir to the path such that autograder.py can be seen 
             sys.path.append("./")
 
-            write(problem["problem_id"] + ".py", problem["code"])
+            write(problem["id"] + ".py", problem["code"])
             write("autograder.py", get_autograder_code())
             exec_string = create_execution_string(problem["testcase"])
             
             try:
                 exec_globals = {}
-                with swallow_io():
-                    with time_limit(timeout):
-                        exec(exec_string, exec_globals)
-                result.append("passed")
-            except TimeoutException:
-                result.append("timed out")
-            except BaseException as e:
-                result.append(f"failed: {e}")
+                stream = io.StringIO()
+                with contextlib.redirect_stdout(stream):
+                    with contextlib.redirect_stderr(stream):
+                        with redirect_stdin(stream):
+                            exec(exec_string, exec_globals)
+                unit_test_result = stream.getvalue()
+                score = get_unit_test_score(unit_test_result)
+                result.append({"exec_result": "completed", "score": score, "text": unit_test_result})
+                assert isinstance(score, float)
 
+            except TimeoutException:
+                result.append({"exec_result": "timed out", "score": 0, "text": unit_test_result})
+            except BaseException as e:
+                result.append({"exec_result": f"failed: {e}", "score": 0, "text": ""})
+                # print(result[-1])
+            
             # Needed for cleaning up.
             shutil.rmtree = rmtree
             os.rmdir = rmdir
@@ -76,13 +88,9 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
         p.kill()
 
     if not result:
-        result.append("timed out")
+        result.append({"exec_result": "timed out", "score": 0, "text": ""})
 
-    return dict(
-        passed=result[0] == "passed",
-        result=result[0],
-        completion_id=completion_id,
-    )
+    return result[0]
 
 
 @contextlib.contextmanager
@@ -247,3 +255,10 @@ def get_autograder_code():
     with open(src.autograder.__file__, "r") as fp:
         file_content = fp.read()
     return file_content
+
+def get_unit_test_score(testcase_output):
+    lines = testcase_output.splitlines()
+    utr = [l for l in lines if l.startswith("Unit Test Returned:")]
+    if utr:
+        return float(utr[0].replace("Unit Test Returned:", "").strip())
+    return 0.0
