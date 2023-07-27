@@ -97,6 +97,7 @@ def get_results(problems_df, model):
         row = problems_df.iloc[i].to_dict()
         problem_description = html2text.html2text(row['prompt'])
         row["prompt"] = generatePropmt(problem_description, row['skeleton'])
+        row["model"] = model
         try: 
             gpt_answser = generateGPTAnswer(row["prompt"], model=model)
             row["code"] = extractResultCode(gpt_answser)
