@@ -1,6 +1,0 @@
-
-list_of_animals = ["A", "B", "C"]
-
-for animal in list_of_animals:
-    print(animal)
-

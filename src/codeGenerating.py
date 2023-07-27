@@ -22,14 +22,15 @@ def getConcepts(problem_id, df):
 
 def generatePropmt(problem_description, skeleton_code, student_code, concepts):
     
-    prompt = "You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming." 
+    # prompt = "You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming."
+    prompt = "You are given the following problem statement:"
     prompt += f"\n{problem_description}\n"
     if skeleton_code:
-        prompt += f"\nPlease build your solution based on the following skeleton code: :\n{skeleton_code}\n"
+        prompt += f"\nWrite a solution (in Python) that solves the problem statement using the following skeleton code: \n{skeleton_code}\n"
         
     if concepts:
         prompt +=  f"Assume your python knowledge is within {str(concepts)}\n"
-    prompt += "The answer should be code only, please do not provide explanations. Please put the answer within the fenced code block. The skeleton code should be included in your answer."
+    prompt += "Put your code solution within the fenced code block, and do not provide explanations for your solution."
 
     return prompt
 
@@ -100,7 +101,7 @@ def main():
     problems_filename = os.path.join(args.input_dir, 'falconcode_v1_table_problems_updated.csv')
     problems_df = pd.read_csv(problems_filename)
     problems_df = problems_df.drop_duplicates(subset='id', keep='first')
-    problems_df.fillna("")
+    problems_df = problems_df.fillna("")
     
     config = json2data(args.config)
     problems_to_drop = json2data(args.validity)
