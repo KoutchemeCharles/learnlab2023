@@ -1,11 +1,13 @@
 # Project specific
-scripts/
 logs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# bash scripts
+*.sh
 
 # C extensions
 *.so
