@@ -1,6 +1,14 @@
 {
-    "task": "synthesis", 
-    "prompt": "You are a helpful Teaching Assistant in a CS1 programming course teaching the basics of python programming. Please provide a solution to the following problem statement.",
-    "dataset": "falconcode_v1_table_problems.csv",
-    "rejected": ["pex3", "caesar", "caesar_gc", "Airstrike","Recon","Skywriter","CS110_Ingenuity_Simulator_Spiral_1","CS110_Ingenuity_Simulator_Spiral_2", "CS110_Ingenuity_Simulator_Spiral_3","pex1"]
+    "task": "synthesis",
+    "model": "gpt3.5-turbo",
+    "dataset": {
+        "name": "falcon",
+        "path": "/scratch/work/koutchc1/datasets/falconcode"
+    },
+    "prompt": {
+        "messages": [
+            {"role": "system", "content": "You are a highly intelligent coding bot that can easily handle any Python programming task. Given a natural language instructions you can always implement the correct Python solution. Your focus is the solution code only. You are not allowed to provide explanations."},
+            {"role": "user", "content": "Example (toy) instructions: **PROBLEM STATEMENT** Implement a Python program to print 'Hello, World!'. \n  * Write your solution in the hello.py. \n Example bot solution: \n === hello.py === \n print('Hello, World!') \n ==="}
+        ]
+    }
 }

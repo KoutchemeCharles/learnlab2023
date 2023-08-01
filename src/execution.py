@@ -14,8 +14,7 @@ import platform
 import signal
 import tempfile
 
-import src.autograder
-import src.new_autograder
+import src.utils.autograder
 from src.utils.files import write
 
 
@@ -251,7 +250,7 @@ def create_execution_string(testcase):
 
 def get_autograder_code():
     """ Super dirty but temporary """
-    with open(src.new_autograder.__file__, "r") as fp:
+    with open(src.utils.autograder.__file__, "r") as fp:
         file_content = fp.read()
     return file_content
 

@@ -1,4 +1,4 @@
-import re
+import pandas as pd 
 from markdownify import MarkdownConverter
 
 class TableConverter(MarkdownConverter):
@@ -18,7 +18,3 @@ class TableConverter(MarkdownConverter):
         except:
             return ""
 
-# Create shorthand method for conversion
-def md(html, **options):
-    mkdwn = TableConverter(**options).convert(html)
-    return re.sub(r'\n\s*\n', '\n', mkdwn).strip()

@@ -118,7 +118,6 @@ def get_results(problems_df, model):
 
         results.append(row)
         
-        
     result_df = pd.DataFrame(results)
 
     return result_df
@@ -141,18 +140,7 @@ def query_openai(problems_df, args):
     return dataframe
 
 
-def load_dataset(args):
-    problems_filename = os.path.join(args.input_dir, 'falconcode_v1_table_problems_updated.csv')
-    problems_df = pd.read_csv(problems_filename)
-    problems_df = problems_df.fillna("")
-    print("Original number of problems", len(problems_df))
-    problems_df = problems_df.drop_duplicates(subset='id', keep='first')
-    print("After dropping duplicates", len(problems_df))
-    problems_to_drop = json2data(args.validity)
-    problems_df = problems_df[~problems_df['id'].isin(problems_to_drop)]
-    print("after removing bad problems", len(problems_df))
 
-    return problems_df
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Call chatGPT-3.5 api to generate code and save into a csv file.')
