@@ -1,0 +1,9 @@
+Original number of problems 661
+After dropping duplicates 422
+after removing bad problems 377
+problems dataframe    Unnamed: 0  ...                                           skeleton
+0           0  ...  # AUTOGRADER IMPORT REMOVED\n\n# -------------...
+
+[1 rows x 29 columns]
+Remaining 0 n_trials 3
+sleeping before trying again

@@ -15,6 +15,7 @@ import signal
 import tempfile
 
 import src.autograder
+import src.new_autograder
 from src.utils.files import write
 
 
@@ -51,7 +52,7 @@ def check_correctness(problem: Dict, completion: str, timeout: float,
             write(problem["id"] + ".py", problem["code"])
             write("autograder.py", get_autograder_code())
             exec_string = create_execution_string(problem["testcase"])
-            
+                        
             try:
                 exec_globals = {}
                 stream = io.StringIO()
@@ -223,8 +224,8 @@ def reliability_guard(maximum_memory_bytes: Optional[int] = None):
     shutil.move = None
     shutil.chown = None
 
-    import subprocess
-    subprocess.Popen = None  # type: ignore
+    import subprocess # we need subprocess.Popen by the autograder module 
+    #subprocess.Popen = None  # type: ignore
 
     __builtins__['help'] = None
 
@@ -238,21 +239,19 @@ def reliability_guard(maximum_memory_bytes: Optional[int] = None):
 
 
 def create_execution_string(testcase):
-    unit_test_string = testcase
-    # Allow code execution not in the main clause
-    unit_test_string = unit_test_string.replace("if __name__ == '__main__':", "")
-    unit_test_string = unit_test_string.replace("result = test_passed()", "")
-    unit_test_string = unit_test_string.replace('print("Unit Test Returned:", result)', "")
-    unit_test_string = unit_test_string.strip()
-    unit_test_string = unit_test_string + "\nresult = test_passed()\n"
-    unit_test_string = unit_test_string + 'print("Unit Test Returned:", result)'
-    unit_test_string = unit_test_string.replace("from cs110 import autograder", "import autograder")
+    testcase = testcase.replace("from cs110 import autograder", "import autograder")
+    testcase = testcase.replace("if __name__ == '__main__':", "")
+    testcase = testcase.replace("result = test_passed()", "")
+    testcase = testcase.replace('print("Unit Test Returned:", result)', "")
+    testcase = testcase.strip()
+    testcase = testcase + "\nresult = test_passed()\n"
+    testcase = testcase + 'print("Unit Test Returned:", result)'
     
-    return unit_test_string
+    return testcase
 
 def get_autograder_code():
     """ Super dirty but temporary """
-    with open(src.autograder.__file__, "r") as fp:
+    with open(src.new_autograder.__file__, "r") as fp:
         file_content = fp.read()
     return file_content
 

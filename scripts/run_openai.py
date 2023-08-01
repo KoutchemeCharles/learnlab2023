@@ -94,6 +94,7 @@ def generateGPTAnswer(prompt, api_key=os.environ.get('OPEN_AI_KEY', None), model
 
 
 def get_results(problems_df, model):
+    print("problems dataframe", problems_df)
 
     results = []
     for i in tqdm(range(len(problems_df))):
@@ -104,13 +105,19 @@ def get_results(problems_df, model):
         try: 
             gpt_answser = generateGPTAnswer(row["prompt"], model=model)
             row["code"] = extractResultCode(gpt_answser)
-            row.update(check_correctness(row, timeout=5.0, completion=None))
-
+            output = check_correctness(row, timeout=5.0, completion=None)
+            row.update(output)
+            
         except openai.error.ServiceUnavailableError:
             print("Service unavailable, trying again")
             continue
+        except openai.error.RateLimitError:
+            print("No moneey")
+            time.sleep(1)
+            exit()
 
         results.append(row)
+        
         
     result_df = pd.DataFrame(results)
 
@@ -160,8 +167,10 @@ def parse_args():
 def main():
     args = parse_args()
     problems_df = load_dataset(args)
+    # Temporary
+    problems_df = problems_df.head(1)
     dataframe = query_openai(problems_df, args)
-    save_generation_results(dataframe, args)
+    # save_generation_results(dataframe, args)
     
 
 if __name__ == '__main__':
