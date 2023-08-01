@@ -1,0 +1,142 @@
+,id,course_id,type,extract,name
+0,PA2_practice2,4,lab,function: get\_value(n). Your,startercode
+1,PA2_practice4,4,lab,"dataset called `fuelprices.csv` that
+ contains","called `fuelprices.csv` that
+"
+2,a1_3_arrow,3,skill,partially complete Python,startercode
+3,a1_3_cards,3,skill,partially complete Python,startercode
+4,a1_3_goldilocks,3,skill,partially complete Python,startercode
+5,a1_3_satellite,3,skill,partially complete Python,startercode
+6,a1_3_speed,3,skill,partially complete Python,startercode
+7,a1_3_vspeed,3,skill,partially complete Python,startercode
+8,a1_4_arrow,2,skill,partially complete Python,startercode
+9,a1_4_cards,2,skill,partially complete Python,startercode
+10,a1_4_dog,3,skill,template that gets,startercode
+11,a1_4_goldilocks,2,skill,partially complete Python,startercode
+12,a1_4_pt,3,skill,template that gets,startercode
+13,a1_4_run,3,skill,template that gets,startercode
+14,a1_4_satellite,2,skill,partially complete Python,startercode
+15,a1_4_sickness,3,skill,template that gets,startercode
+16,a1_4_speed,2,lab,partially complete Python,startercode
+17,a2_1_calculate,2,skill,"function called calculate\_equation,",startercode
+18,a2_1_calculate_volume,2,skill,"function called calculate\_volume,",startercode
+19,a2_1_equation,2,skill,"function called calculate\_equation,",startercode
+20,a2_1_future_value,2,skill,"function called calculate\_future\_value,",startercode
+21,a2_1_right_triangle,3,skill,"function called calculate\_hypotenuse,",startercode
+22,a2_1_surface,2,skill,"function called calculate\_surface,",startercode
+23,a2_3_19,2,skill,program that gets,startercode
+24,a2_3_countdown,2,skill,program that gets,startercode
+25,a2_3_eighteen,3,skill,program that gets,startercode
+26,a2_3_fourty_two,2,skill,program that gets,startercode
+27,a2_3_nine,3,skill,program that gets,startercode
+28,a2_3_nineteen,3,skill,program that gets,startercode
+29,a2_3_seventeen,2,skill,program that gets,startercode
+30,a2_3_thirteen,3,skill,program that gets,startercode
+31,a2_3_twenty_one,2,skill,program that gets,startercode
+32,a2_4_colon,2,skill,program that gets,startercode
+33,a2_4_comma,2,skill,program that gets,startercode
+34,a2_4_dash,2,skill,program that gets,startercode
+35,a2_4_hash,3,skill,Python program that,startercode
+36,a2_4_hyphen,3,skill,Python program that,startercode
+37,a2_4_pipe,3,skill,Python program that,startercode
+38,a2_4_semic,2,skill,program that gets,startercode
+39,a2_4_slash,2,skill,program that gets,startercode
+40,a2_6_attack,3,lab,dataset containing information,"open(""pokemon.csv"","
+41,a2_6_fastest,3,lab,dataset containing information,"open(""pokemon.csv"","
+42,a2_6_highest_hp,3,lab,dataset containing information,"open(""pokemon.csv"","
+43,a2_6_lowest_defense,3,lab,dataset containing information,"open(""pokemon.csv"","
+44,a2_6_lowest_spec_attack,3,lab,dataset containing information,"open(""pokemon.csv"","
+45,a2_6_lowest_spec_def,3,lab,dataset containing information,"open(""pokemon.csv"","
+46,a2_7_attack,2,lab,dataset containing information,"open(""pokemon.csv"","
+47,a2_7_fastest,2,lab,dataset containing information,"open(""pokemon.csv"","
+48,a2_7_highest_hp,2,lab,dataset containing information,"open(""pokemon.csv"","
+49,a2_7_lowest_defense,2,lab,dataset containing information,"open(""pokemon.csv"","
+50,a2_7_lowest_spec_attack,2,lab,dataset containing information,"open(""pokemon.csv"","
+51,a3_1_afbs,2,skill,list called `list_of_bases`. Write,startercode
+52,a3_1_cargo,2,skill,list called `list_of_cargo_planes`. Write,startercode
+53,a3_1_commands,2,skill,list called `list_of_usaf_commands`. Write,startercode
+54,a3_1_countries,2,skill,list called `list_of_coalition_countries`. Write,startercode
+55,a3_1_light_aircraft,3,skill,list called `list_of_aircraft`. Write,startercode
+56,a3_1_medals,2,skill,list called `list_of_medals` that,startercode
+57,a3_2_cars,2,skill,list called `list_of_cars`.,startercode
+58,a3_2_cities,2,skill,list called `list_of_cities`.,startercode
+59,a3_2_departments,2,skill,list called `department_list`. Write,startercode
+60,a3_2_grammys,2,skill,list called `grammy_list`.,startercode
+61,a3_2_jets,2,skill,list called `list_of_aircraft`. Write,startercode
+62,a3_3_aircraft,2,skill,list called `list_of_aircraft_classes`. Write,startercode
+63,a3_3_animals,2,skill,list called `list_of_animals`. Write,startercode
+64,a3_3_chars1,4,skill,list called `list_of_characters`. Write,startercode
+65,a3_3_chars2,4,skill,list called `list_of_characters`. Write,startercode
+66,a3_3_chars3,4,skill,list called `list_of_characters`. Write,startercode
+67,a3_3_dogs,3,skill,list called `list_of_dogs`. Write,startercode
+68,a3_3_games,2,skill,list called `list_of_games`. Write,startercode
+69,a3_3_pizza,2,skill,list called `list_of_pizza_toppings`. Write,startercode
+70,a3_3_ships,2,skill,list called `list_of_ship_classes`. Write,startercode
+71,a3_4_ages,2,skill,list called list\_of\_ages.,startercode
+72,a3_4_heights,2,skill,list called list\_of\_heights.,startercode
+73,a3_4_ptscores,2,skill,list called list\_of\_pt\_scores.,startercode
+74,a3_4_run,2,skill,list called list\_of\_run\_times.,startercode
+75,a3_4_testscores,3,skill,list called list\_of\_test\_scores.,startercode
+76,a3_4_weights,2,skill,list called list\_of\_weights.,startercode
+77,a3_5_battleship,2,skill,table that describes,startercode
+78,a3_5_carnival,2,skill,table that describes,startercode
+79,a3_5_chess,2,skill,table that describes,startercode
+80,a3_5_connect,3,skill,table that describes,startercode
+81,a3_5_map,2,skill,table that describes,startercode
+82,a3_5_star_map,2,skill,table that describes,startercode
+83,a3_7_max,2,lab,dataset called `powerplants.csv` that contains,"open(""powerplants.csv"","
+84,a3_7_max_lego,2,lab,dataset called `legos.csv` that,"open(""legos.csv"","
+85,a3_7_maxpower,2,lab,dataset called `powerplants.csv` that contains,"open(""powerplants.csv"","
+86,a3_7_min_lego,2,lab,dataset called `legos.csv` that,"open(""legos.csv"","
+87,a3_7_minpower,2,lab,dataset called `powerplants.csv` that contains,"open(""powerplants.csv"","
+88,a4_2_dog,2,skill,template that gets,startercode
+89,a4_2_pt,2,skill,template that gets,startercode
+90,a4_2_sickness,2,skill,template that gets,startercode
+91,a4_3_aircraft,2,skill,table called `usaf_aircraft`,startercode
+92,a4_3_new_cars,2,skill,table called `new_cars`,startercode
+93,a4_3_parks,2,skill,table called `amusement_parks`,startercode
+94,a4_4_names,2,skill,"file named ""cadets.csv""","""cadets.csv""
+"
+95,a4_4_squadrons,2,skill,"file named ""cadets.csv""","""cadets.csv""
+"
+96,a4_4_year,2,skill,"file named ""cadets.csv""","""cadets.csv""
+"
+97,a4_7_fit_e,2,lab,dataset called `afpft_v1.csv` that describes,called `afpft_v1.csv` that
+98,a4_7_fit_u,2,lab,dataset called `afpft_v2.csv` that describes,called `afpft_v2.csv` that
+99,lsn10_skill1,3,skill,function called `draw_tree()`,startercode
+100,lsn10_skill2,3,skill,function called `draw_multiple_trees()`,startercode
+101,lsn11_callme,2,lab,three functions. Open,startercode
+102,lsn11_skill1,2,skill,function called `draw_tree()`,startercode
+103,lsn11_skill2,2,skill,function called `draw_multiple_trees()`,startercode
+104,lsn12_skill1,2,skill,function called get\_fuel\_consumption(),startercode
+105,lsn13_skill2,2,skill,WHILE loop that,startercode
+106,lsn14_skill1,2,skill,variable that asks,startercode
+107,lsn15_skill1,2,skill,file called sample.txt.,sample.txt.
+108,lsn16_practice2,2,lab,function that returns,startercode
+109,lsn16_practice4,2,lab,dataset called `fuelprices.csv` that contains,called `fuelprices.csv` that
+110,lsn17_skill1,4,skill,the template code,startercode
+111,lsn20_skill1,2,skill,CSV file that,startercode
+112,lsn22_skill1,2,skill,the template code,startercode
+113,lsn23_crashes,3,lab,crashdata\_subset1.csv file.  Here,"run_test(""crashdata_2015.csv"")
+,run_test(""crashdata_2003.csv""),run_test(""crashdata_2011.csv"")"
+114,lsn23_skill1,2,skill,the template code,startercode
+115,lsn23_tokens,3,lab,the file review.txt,"[""article.txt"",,[""article2.txt"",,solution(""article2.txt"",,solution(""article.txt"",,solution(""review.txt"",,[""review.txt"","
+116,lsn24_starmap,4,lab,"table that
+ describes",startercode
+117,lsn25_crashes,2,lab,crashdata\_subset1.csv file. Here,"run_test(""crashdata_2015.csv"")
+,run_test(""crashdata_2003.csv""),run_test(""crashdata_2011.csv"")"
+118,lsn25_skill1,2,skill,dictionary that contains,startercode
+119,lsn25_tokens,2,lab,the file review.txt,"[""article.txt"",,[""article2.txt"",,solution(""article2.txt"",,solution(""article.txt"",,solution(""review.txt"",,[""review.txt"","
+120,lsn33_practice8,2,lab,"file called oscar\_age\_male.csv,","oscar\_age\_male.csv,"
+121,lsn6_skill2,2,skill,template that gets,startercode
+122,lsn7_skill1,2,skill,program that gets,startercode
+123,lsn7_skill2,2,skill,program that gets,startercode
+124,lsn8_practice1,3,lab,an incomplete Python,startercode
+125,lsn8_practice2,3,lab,program that gets,startercode
+126,lsn8_skill1,2,skill,program that gets,startercode
+127,lsn8_skill2,2,skill,program that gets,startercode
+128,lsn9_callme,4,lab,three functions. Open,startercode
+129,lsn9_practice1,2,lab,program that prints,startercode
+130,lsn9_practice2,2,lab,program that gets,startercode
+131,lsn9_skill1,4,skill,function called `draw_tree()`,startercode
+132,lsn9_skill2,4,skill,function called `draw_multiple_trees()`,startercode
