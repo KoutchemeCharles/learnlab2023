@@ -18,3 +18,6 @@ class TableConverter(MarkdownConverter):
         except:
             return ""
 
+
+def md(html, **options):
+    return TableConverter(**options).convert(html)
